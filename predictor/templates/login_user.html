@@ -1,0 +1,161 @@
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #62645f, #56ab2f);
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        .login-container {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4a69bd;
+            box-shadow: 0 0 0 0.2rem rgba(74, 105, 189, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #57bd4a;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #3b7c33;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+        }
+        #loading-screen {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            padding-top: 20%;
+        }
+    
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="d-flex flex-column justify-content-center align-items-center h-100">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Logging you in, please wait...</div>
+        </div>
+    </div>
+
+
+<div class="d-flex align-items-center justify-content-center login-container" style="height: 100vh;">
+    <div class="card p-4" style="width: 100%; max-width: 400px;">
+        <div class="text-center mb-3">
+            <img src="{% static 'images/financial (3).png' %}" alt="Logo" style="height: 200px;">
+        </div>
+        <h3 class="text-center mb-4">Login</h3>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please correct the error{{ form.errors|length|pluralize:"s" }} below.
+                </div>
+            {% endif %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                {% render_field form.username class="form-control" %}
+            </div>
+            <div class="mb-3 position-relative">
+                <label for="id_password" class="form-label">Password</label>
+                <div class="input-group">
+                    {% render_field form.password class="form-control" id="password" %}
+                    <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1">
+                        👁️
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+            <div class="mt-3 text-center">
+                <p class="mb-0">Don't have an account?
+                    <a href="{% url 'signupforuser' %}" class="text-decoration-none text-primary fw-bold">Sign up</a>
+                </p>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        const passwordField = document.getElementById("password");
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+        this.textContent = type === "password" ? "👁️" : "🙈";
+    });
+
+    const form = document.querySelector("form");
+    const loadingScreen = document.getElementById("loading-screen");
+
+    form.addEventListener("submit", function () {
+        loadingScreen.style.display = "block";
+    });
+
+    
+</script>
+</body>
+</html>

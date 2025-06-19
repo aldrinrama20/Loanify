@@ -1,0 +1,130 @@
+ {% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loan Entry</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #56ab2f, #a8e063);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .slider-value {
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: block;
+      text-align: right;
+      color: #555;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .banner-image {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="{% static 'images/financial (3).png' %}" alt="Loan Banner" class="banner-image">
+  <h2>Start Your Loan Application</h2>
+
+  <!-- Loan Amount -->
+  <label for="loanAmount">Loan Amount (₱)</label>
+  <span class="slider-value">₱<span id="loanAmountValue">100000</span></span>
+  <input type="range" id="loanAmount" min="5000" max="1000000" step="5000" value="100000">
+
+  <!-- Loan Term -->
+  <label for="loanTerm">Loan Term (months)</label>
+  <span class="slider-value"><span id="loanTermValue">12</span> months</span>
+  <input type="range" id="loanTerm" min="6" max="60" step="6" value="12">
+
+  <button onclick="continueToForm()">Continue</button>
+</div>
+
+<script>
+        const amountSlider = document.getElementById("loanAmount");
+        const termSlider = document.getElementById("loanTerm");
+        const amountValue = document.getElementById("loanAmountValue");
+        const termValue = document.getElementById("loanTermValue");
+
+        amountSlider.oninput = () => {
+            amountValue.textContent = parseInt(amountSlider.value).toLocaleString();
+        };
+
+        termSlider.oninput = () => {
+            termValue.textContent = termSlider.value;
+        };
+
+        function continueToForm() {
+            const loanAmount = amountSlider.value;
+            const loanTerm = termSlider.value;
+
+            // Store to localStorage or pass via query parameters
+            localStorage.setItem("loanAmount", loanAmount);
+            localStorage.setItem("loanTerm", loanTerm);
+
+            // Redirect to Django form.html route
+            window.location.href = "{% url 'signupforuser' %}";
+        }
+
+        //clearing storage data after submit
+        document.querySelector("form").addEventListener("submit", () => {
+            localStorage.removeItem("loanAmount");
+            localStorage.removeItem("loanTerm");
+        });
+</script>
+
+</body>
+</html>

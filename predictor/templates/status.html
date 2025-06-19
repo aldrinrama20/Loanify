@@ -1,0 +1,394 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #114204; 
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #457454;
+            backdrop-filter: blur(6px); /* optional: adds a blur effect for better appearance */
+            padding-top: 0; /* Remove top padding */
+            transition: 0.3s;
+            overflow-x: hidden;
+        }
+
+        .sidebar a {
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #ecf0f1;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #626d79;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 260px;
+            font-size: 22px;
+            background-color: #343a40;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            z-index: 1001;
+            border-radius: 4px;
+        }
+
+        .collapsed .sidebar {
+            width: 0;
+            overflow: hidden;
+        }
+
+        .collapsed .toggle-btn {
+            left: 10px;
+        }
+
+        .collapsed .container {
+            margin-left: auto !important;
+        }
+
+        h2 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+            max-width: 100%;
+            padding: 30px 40px;
+            background: #114204;
+            border-radius: 0px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+        select, input[type="number"], input[type="text"], input[type="float"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        
+        form button[type="submit"] {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: #28a745;       /* Bootstrap-style green */
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .download-btn {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .download-btn a {
+            text-decoration: none;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn a:hover {
+            background-color: #218838;
+        }
+        .header {
+            background-color: #babdbc;
+            color: #000000;
+            padding:10px 80px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .collapsed .header {
+            margin-left: 0;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .sidebar a.active {
+            background-color: #626d79;
+            font-weight: bold;
+        }
+        .sidebar-logo {
+            width: 250px;
+            height: auto;  /* Allow the height to adjust based on image */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0; /* Optional: Adjust padding to give space around the logo */
+        }
+
+        .sidebar-logo img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        .fade-in-form {
+            animation: fadeInForm 1s ease-out;
+        }
+        
+        @keyframes fadeInForm {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        form button[type="button"] {
+                width: 100%;
+                padding: 12px 20px;
+                background-color: #00ff4c;
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
+
+            form button[type="button"]:hover {
+                background-color: #24b300;
+                transform: translateY(-2px);
+            }
+            .progress-bar-wrapper {
+                width: 100%;
+                height: 8px;
+                background-color: #e0e0e0;
+                border-radius: 4px;
+                margin-bottom: 20px;
+                overflow: hidden;
+            }
+
+            #progress-bar {
+                height: 100%;
+                width: 20%;
+                background-color: #28a745; /* Green like Predict button */
+                transition: width 0.4s ease-in-out;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .input-indicator-wrapper {
+                display: flex;
+                align-items: center;
+            }
+
+            .input-indicator-wrapper input,
+            .input-indicator-wrapper select {
+                flex: 1;
+                margin-right: 8px;
+            }
+
+            .required-indicator {
+                color: red;
+                font-weight: bold;
+            }
+            .hidden {
+                display: none !important;
+            }
+            
+    </style>
+</head>
+<body>
+
+ <!-- Global Header -->
+ <header class="header">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+            <img src="{% static 'images/exam.png' %}" alt="Logo" style="height: 40px; margin-right: 12px;">
+            <h1 style="margin: 0; font-size: 30px;">APPLY FOR LOAN</h1>
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div style="position: relative;">
+            <div onclick="toggleDropdown()" style="display: flex; align-items: center; justify-content: space-between; background-color: #babdbc; padding: 8px 8px; border-radius: 8px; color: white; cursor: pointer;">
+                <img src="{% static 'images/user.png' %}" alt="Profile" style="width: 40px; height: 40px; border-radius: 1%; margin-left: 100px;">
+                <div style="display: flex; flex-direction: column;">
+                    
+                </div>
+            </div>
+
+            <div id="dropdownMenu" style="display: none; position: absolute; top: 60px; right: 0; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); min-width: 160px; overflow: hidden;">
+                <a href="#" style="display: block; padding: 10px 16px; color: #333; text-decoration: none; font-size: 14px;"><strong>Profile</strong></a>
+                <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" style="width: 100%; padding: 10px 16px; border: none; background: none; text-align: left; font-size: 14px; cursor: pointer; color: #333;">Log Out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/financial (1).png' %}" alt="Loanify Logo">
+    </div>
+    <a href="{% url 'loan_application' %}">
+        <i class="fas fa-file-circle-plus" class="active"></i>Apply for Loan
+    </a>
+    <a href="{% url 'status' %}">
+        <i class="fas fa-clipboard-check"></i> My Loan Status
+    </a>
+    
+</div>
+<!-- Toggle Button -->
+<button class="toggle-btn" id="sidebarToggle" onclick="toggleSidebar()">✕</button>
+
+
+<!-- Main Content -->
+{% if user_records %}
+
+    <div class="container">
+        <div class="table-container" style="background: white; padding: 20px; border-radius: 12px;">
+        <h3 style="text-align: center;">My Loan Applications</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid #ccc;">
+    <thead>
+        <tr style="background-color: #457454; color: white; border: 1px solid #ccc;">
+            <th style="padding: 10px; border: 1px solid #ccc;">ID</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Loan Type</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in user_records %}
+            <tr>
+                <td style="padding: 10px; text-align: center; border: 1px solid #ccc;">{{ record.id }}</td>
+                <td style="padding: 10px; text-align: center; border: 1px solid #ccc;">{{ record.loan_type|title }}</td>
+                <td style="padding: 10px; text-align: center; border: 1px solid #ccc;">
+                    {% if not record.is_admin_approved %}
+                        <span style="color: orange; font-weight: bold;">Pending</span>
+                    {% elif record.prediction_result == 'Approved' %}
+                        <span style="color: green; font-weight: bold;">Approved</span>
+                    {% elif record.prediction_result == 'Rejected' %}
+                        <span style="color: red; font-weight: bold;">Rejected</span>
+                    {% else %}
+                        <span style="color: orange; font-weight: bold;">Pending</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+        </div>
+    </div>
+{% else %}
+    <p style="text-align: center; margin-top: 500px;">You have not submitted any loan applications yet.</p>
+{% endif %}
+
+
+
+
+<script>
+    function toggleSidebar() {
+        document.body.classList.toggle('collapsed');
+        const toggleBtn = document.getElementById('sidebarToggle');
+            const isCollapsed = document.body.classList.contains('collapsed');
+            toggleBtn.textContent = isCollapsed ? '☰' : '✕'; // ☰ when collapsed, ✕ when open
+
+            // Fix DataTable layout after sidebar toggle
+            setTimeout(function () {
+                $('#recordsTable').DataTable().columns.adjust().draw();
+            }, 310); // match with CSS transition duration
+    }
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById('dropdownMenu');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(e) {
+        if (!e.target.closest('#dropdownMenu') && !e.target.closest('[onclick="toggleDropdown()"]')) {
+            document.getElementById('dropdownMenu').style.display = 'none';
+        }
+    };
+
+    function showStep(step) {
+    const totalSteps = 5;
+    const progressPercent = (step / totalSteps) * 100;
+    document.getElementById('progress-bar').style.width = progressPercent + '%';
+
+    for (let i = 1; i <= totalSteps; i++) {
+        const stepDiv = document.getElementById('form-step-' + i);
+        if (stepDiv) {
+            stepDiv.style.display = (i === step) ? 'block' : 'none';
+        }
+    }
+}
+
+//works on slider
+    window.onload = function() {
+        const loanAmount = localStorage.getItem("loanAmount");
+        const loanTerm = localStorage.getItem("loanTerm");
+
+        if (loanAmount && loanTerm) {
+        // Optional: auto-fill form fields by ID or name
+        const loanAmountInput = document.querySelector("input[name='LoanAmount']");
+        const loanTermInput = document.querySelector("input[name='Loan_Amount_Term']");
+
+        if (loanAmountInput) loanAmountInput.value = loanAmount;
+        if (loanTermInput) loanTermInput.value = loanTerm;
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

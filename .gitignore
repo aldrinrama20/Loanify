@@ -1,0 +1,18 @@
+# Python
+*.pyc
+__pycache__/
+
+# Env and DB
+.env
+*.sqlite3
+
+# Django static dev folder (optional)
+static/
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
